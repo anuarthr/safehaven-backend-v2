@@ -31,7 +31,6 @@ public class Cita {
     @Temporal(TemporalType.DATE)
     private Date fecha;
 
-    @Temporal(TemporalType.TIME)
     private LocalTime hora;
 
     @Temporal(TemporalType.DATE)
