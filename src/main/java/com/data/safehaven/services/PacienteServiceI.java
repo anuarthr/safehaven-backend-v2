@@ -3,6 +3,7 @@ package com.data.safehaven.services;
 
 import com.data.safehaven.dtos.PacienteDto;
 import com.data.safehaven.dtos.PacienteMapper;
+import com.data.safehaven.dtos.RegistroPacienteDto;
 import com.data.safehaven.entities.Paciente;
 import com.data.safehaven.exceptions.EmailException;
 import com.data.safehaven.repositories.PacienteRepository;
@@ -14,13 +15,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PacienteServiceImpl implements PacienteService {
+public class PacienteServiceI implements PacienteService {
 
     private final PacienteRepository pacienteRepository;
     private final PacienteMapper pacienteMapper;
     private final RolService rolService;
 
-    public PacienteServiceImpl(PacienteRepository pacienteRepository, PacienteMapper pacienteMapper, RolService rolService) {
+    public PacienteServiceI(PacienteRepository pacienteRepository, PacienteMapper pacienteMapper, RolService rolService) {
         this.pacienteRepository = pacienteRepository;
         this.pacienteMapper = pacienteMapper;
         this.rolService = rolService;
@@ -47,23 +48,18 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public PacienteDto savePaciente(PacienteDto paciente) {
+    public Optional<PacienteDto> findByCorreoElectronico(String correoElectronico) {
+        return pacienteRepository.findByCorreoElectronico(correoElectronico).map(pacienteMapper::toDTO);
+    }
+
+    @Override
+    public PacienteDto savePaciente(RegistroPacienteDto paciente) {
         if (pacienteRepository.findByCorreoElectronico(paciente.correoElectronico()).isPresent()) {
             throw new EmailException(paciente.correoElectronico());
         }
         Paciente pacienteEntity = pacienteMapper.toEntity(paciente, rolService);
         pacienteEntity.setFechaDeRegistro(new Date());
         return pacienteMapper.toDTO(pacienteRepository.save(pacienteEntity));
-    }
-
-    @Override
-    public Optional<PacienteDto> findByCorreoElectronico(String correoElectronico) {
-        return pacienteRepository.findByCorreoElectronico(correoElectronico).map(pacienteMapper::toDTO);
-    }
-
-    @Override
-    public boolean validatePassword(PacienteDto paciente, String password) {
-        return paciente.password().equals(password);
     }
 
     @Override
@@ -80,7 +76,6 @@ public class PacienteServiceImpl implements PacienteService {
             oldPaciente.setNombre(paciente.nombre());
             oldPaciente.setApellido(paciente.apellido());
             oldPaciente.setCorreoElectronico(paciente.correoElectronico());
-            oldPaciente.setPassword(paciente.password());
             oldPaciente.setEdad(paciente.edad());
             oldPaciente.setTelefono(paciente.telefono());
             oldPaciente.setSexo(paciente.sexo());
@@ -91,4 +86,3 @@ public class PacienteServiceImpl implements PacienteService {
         }).map(pacienteMapper::toDTO);
     }
 }
-

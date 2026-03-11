@@ -1,7 +1,7 @@
 package com.data.safehaven.services;
 
-
 import com.data.safehaven.dtos.PacienteDto;
+import com.data.safehaven.dtos.RegistroPacienteDto;
 import com.data.safehaven.entities.Paciente;
 
 import java.util.List;
@@ -19,11 +19,9 @@ public interface PacienteService {
 
     Optional<PacienteDto> findByCorreoElectronico(String correoElectronico);
 
-    PacienteDto savePaciente(PacienteDto paciente);
+    PacienteDto savePaciente(RegistroPacienteDto paciente);
 
     void deletePaciente(long id);
 
     Optional<PacienteDto> updatePaciente(long id, PacienteDto paciente);
-
-    boolean validatePassword(PacienteDto paciente, String password);
 }
