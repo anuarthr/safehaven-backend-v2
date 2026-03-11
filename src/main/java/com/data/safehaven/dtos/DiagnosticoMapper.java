@@ -1,33 +1,29 @@
 package com.data.safehaven.dtos;
 
-import com.data.safehaven.entities.Cita;
-import com.data.safehaven.entities.Consultorio;
+import com.data.safehaven.entities.Diagnostico;
 import com.data.safehaven.entities.Paciente;
 import com.data.safehaven.entities.Psicologo;
-import com.data.safehaven.services.ConsultorioServiceI;
 import com.data.safehaven.services.PacienteService;
 import com.data.safehaven.services.PsicologoServiceI;
 import org.mapstruct.*;
 
-
 @Mapper(componentModel = "spring")
-public interface CitaMapper {
+public interface DiagnosticoMapper {
 
     @Mapping(source = "paciente", target = "paciente", qualifiedByName = "idToPaciente")
     @Mapping(source = "psicologo", target = "psicologo", qualifiedByName = "idToPsicologo")
-    @Mapping(source = "consultorio", target = "consultorio", qualifiedByName = "idToConsultorio")
-    Cita toEntity(CitaDto citaDto, @Context PacienteService pacienteService, @Context ConsultorioServiceI consultorioService, @Context PsicologoServiceI psicologoService);
+    Diagnostico toEntity(DiagnosticoDto diagnosticoDto,
+                         @Context PacienteService pacienteService,
+                         @Context PsicologoServiceI psicologoService);
 
     @Mapping(source = "paciente.id", target = "paciente")
     @Mapping(source = "psicologo.id", target = "psicologo")
-    @Mapping(source = "consultorio.id", target = "consultorio")
-    CitaDto toDTO(Cita cita);
+    DiagnosticoDto toDTO(Diagnostico diagnostico);
 
-    @Mapping(source = "paciente.id", target = "paciente")
-    @Mapping(source = "psicologo.id", target = "psicologo")
-    @Mapping(source = "consultorio.id", target = "consultorio")
     @Mapping(target = "id", ignore = true)
-    CitaDto toDTOWithoutId(Cita cita);
+    @Mapping(source = "paciente.id", target = "paciente")
+    @Mapping(source = "psicologo.id", target = "psicologo")
+    DiagnosticoDto toDTOWithoutId(Diagnostico diagnostico);
 
     @Named("idToPaciente")
     default Paciente mapIdToPaciente(Long id, @Context PacienteService pacienteService) {
@@ -38,10 +34,4 @@ public interface CitaMapper {
     default Psicologo mapIdToPsicologo(Long id, @Context PsicologoServiceI psicologoService) {
         return id != null ? psicologoService.findPsicologoById(id).orElse(null) : null;
     }
-
-    @Named("idToConsultorio")
-    default Consultorio mapIdToConsultorio(Long id, @Context ConsultorioServiceI consultorioService) {
-        return id != null ? consultorioService.findConsultorioById(id).orElse(null) : null;
-    }
 }
-

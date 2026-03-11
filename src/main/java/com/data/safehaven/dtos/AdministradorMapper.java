@@ -10,18 +10,16 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface AdministradorMapper {
+
     @Mapping(source = "rol", target = "rol", qualifiedByName = "idToRol")
-    Administrador toEntity(AdministradorDto administradorDto,@Context RolService rolService);
+    Administrador toEntity(RegistroAdministradorDto administradorDto, @Context RolService rolService);
 
     @Mapping(source = "rol.id", target = "rol")
     AdministradorDto toDTO(Administrador administrador);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "rol.id", target = "rol")
-    AdministradorDto toDTOWithoutId(Administrador administrador);
 
     @Named("idToRol")
     default Rol mapIdToRol(Long id, @Context RolService rolService) {
-        return id != null ? rolService.findRoleById(id): null;
+        return id != null ? rolService.findRoleById(id) : null;
     }
 }

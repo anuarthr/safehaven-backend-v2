@@ -10,19 +10,17 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface PsicologoMapper {
+
     @Mapping(source = "rol", target = "rol", qualifiedByName = "idToRol")
-    Psicologo toEntity(PsicologoDto psicologoDto, @Context RolService rolService);
+    Psicologo toEntity(RegistroPsicologoDto psicologoDto, @Context RolService rolService);
 
     @Mapping(source = "rol.id", target = "rol")
     PsicologoDto toDTO(Psicologo psicologo);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "rol.id", target = "rol")
-    PsicologoDto toDTOWithoutId(Psicologo psicologo);
 
     @Named("idToRol")
     default Rol mapIdToRol(Long id, @Context RolService rolService) {
-        return id != null ? rolService.findRoleById(id): null;
+        return id != null ? rolService.findRoleById(id) : null;
     }
 }
 
