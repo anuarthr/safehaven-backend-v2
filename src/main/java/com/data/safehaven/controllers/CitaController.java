@@ -1,33 +1,31 @@
 package com.data.safehaven.controllers;
 
 import com.data.safehaven.dtos.CitaDto;
-import com.data.safehaven.services.CitaService;
+import com.data.safehaven.services.CitaServiceI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/citas")
-@CrossOrigin("http://localhost:5173/")
 public class CitaController {
 
-    private final CitaService citaService;
+    private final CitaServiceI citaService;
 
-    public CitaController(CitaService citaService) {
+    public CitaController(CitaServiceI citaService) {
         this.citaService = citaService;
     }
 
     @GetMapping
-    ResponseEntity<List<CitaDto>> obtenerCitas() {
+    public ResponseEntity<List<CitaDto>> obtenerCitas() {
         return ResponseEntity.ok(citaService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CitaDto> obtenerCitaById(@PathVariable("id") Long id) {
+    public ResponseEntity<CitaDto> obtenerCitaById(@PathVariable Long id) {
         return citaService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -35,30 +33,25 @@ public class CitaController {
 
     @PostMapping
     public ResponseEntity<CitaDto> crearCita(@RequestBody CitaDto cita) {
-        return createCita(cita);
+        CitaDto nuevaCita = citaService.saveCita(cita);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevaCita.id()).toUri();
+        return ResponseEntity.created(location).body(nuevaCita);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CitaDto> eliminarCita(@PathVariable("id") Long id) {
+    public ResponseEntity<CitaDto> eliminarCita(@PathVariable Long id) {
         return citaService.findById(id)
-                .map(p -> {
+                .map(c -> {
                     citaService.deleteCita(id);
-                    return ResponseEntity.ok().body(p);
+                    return ResponseEntity.ok().body(c);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CitaDto> actualizarCita(@PathVariable("id") Long id, @RequestBody CitaDto cita) {
-        Optional<CitaDto> citaUpdate = citaService.updateCita(id, cita);
-        return citaUpdate
+    public ResponseEntity<CitaDto> actualizarCita(@PathVariable Long id, @RequestBody CitaDto cita) {
+        return citaService.updateCita(id, cita)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> createCita(cita));
-    }
-
-    private ResponseEntity<CitaDto> createCita(CitaDto cita) {
-        CitaDto newCita = citaService.saveCita(cita);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newCita.id()).toUri();
-        return ResponseEntity.created(location).body(newCita);
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -1,44 +1,47 @@
 package com.data.safehaven.controllers;
 
 import com.data.safehaven.dtos.PsicologoDto;
-import com.data.safehaven.services.PsicologoService;
+import com.data.safehaven.dtos.RegistroPsicologoDto;
+import com.data.safehaven.services.PsicologoServiceI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/psicologos")
-@CrossOrigin("http://localhost:5173/")
 public class PsicologoController {
-    private final PsicologoService psicologoService;
 
-    public PsicologoController(PsicologoService psicologoService) {
+    private final PsicologoServiceI psicologoService;
+
+    public PsicologoController(PsicologoServiceI psicologoService) {
         this.psicologoService = psicologoService;
     }
 
     @GetMapping
-    ResponseEntity<List<PsicologoDto>> obtenerPsicologos() {
+    public ResponseEntity<List<PsicologoDto>> obtenerPsicologos() {
         return ResponseEntity.ok(psicologoService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PsicologoDto> obtenerPsicologoById(@PathVariable("id") Long id) {
+    public ResponseEntity<PsicologoDto> obtenerPsicologoById(@PathVariable Long id) {
         return psicologoService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PsicologoDto> crearPsicologo(@RequestBody PsicologoDto psicologo) {
-        return createPsicologo(psicologo);
+    public ResponseEntity<PsicologoDto> crearPsicologo(@RequestBody RegistroPsicologoDto psicologo) {
+        PsicologoDto nuevoPsicologo = psicologoService.savePsicologo(psicologo);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevoPsicologo.id()).toUri();
+        return ResponseEntity.created(location).body(nuevoPsicologo);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PsicologoDto> eliminarPsicologo(@PathVariable("id") Long id) {
+    public ResponseEntity<PsicologoDto> eliminarPsicologo(@PathVariable Long id) {
         return psicologoService.findById(id)
                 .map(p -> {
                     psicologoService.deletePsicologo(id);
@@ -47,17 +50,9 @@ public class PsicologoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PsicologoDto> actualizarPsicologo(@PathVariable("id") Long id, @RequestBody PsicologoDto psicologo) {
-        Optional<PsicologoDto> psicologoUpdate = psicologoService.updatePsicologo(id, psicologo);
-        return psicologoUpdate
+    public ResponseEntity<PsicologoDto> actualizarPsicologo(@PathVariable Long id, @RequestBody PsicologoDto psicologo) {
+        return psicologoService.updatePsicologo(id, psicologo)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> createPsicologo(psicologo));
-    }
-
-    private ResponseEntity<PsicologoDto> createPsicologo(PsicologoDto psicologo) {
-        PsicologoDto newPsicologo = psicologoService.savePsicologo(psicologo);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newPsicologo.id()).toUri();
-        return ResponseEntity.created(location).body(newPsicologo);
+                .orElse(ResponseEntity.notFound().build());
     }
 }

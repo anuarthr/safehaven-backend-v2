@@ -1,64 +1,57 @@
 package com.data.safehaven.controllers;
 
-
 import com.data.safehaven.dtos.RolDto;
-import com.data.safehaven.services.RolService;
+import com.data.safehaven.services.RolServiceI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/roles")
 public class RolController {
 
-    private final RolService rolService;
+    private final RolServiceI rolService;
 
-    public RolController(RolService rolService) {
+    public RolController(RolServiceI rolService) {
         this.rolService = rolService;
     }
 
     @GetMapping
-    public List<RolDto> findAll() {
-        return rolService.findAll();
+    public ResponseEntity<List<RolDto>> obtenerRoles() {
+        return ResponseEntity.ok(rolService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RolDto> obtenerPacienteById(@PathVariable("id") Long id) {
+    public ResponseEntity<RolDto> obtenerRolById(@PathVariable Long id) {
         return rolService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<RolDto> saveRol(@RequestBody RolDto rol) {
-        return createRol(rol);
+    public ResponseEntity<RolDto> crearRol(@RequestBody RolDto rol) {
+        RolDto nuevoRol = rolService.saveRol(rol);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevoRol.id()).toUri();
+        return ResponseEntity.created(location).body(nuevoRol);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RolDto> eliminarRol(@PathVariable("id") Long id) {
+    public ResponseEntity<RolDto> eliminarRol(@PathVariable Long id) {
         return rolService.findById(id)
-                .map(p -> {
+                .map(r -> {
                     rolService.deleteRol(id);
-                    return ResponseEntity.ok().body(p);
+                    return ResponseEntity.ok().body(r);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RolDto> actualizarPaciente(@PathVariable("id") Long id, @RequestBody RolDto rol) {
-        Optional<RolDto> rolUpdate = rolService.updateRol(id, rol);
-        return rolUpdate
+    public ResponseEntity<RolDto> actualizarRol(@PathVariable Long id, @RequestBody RolDto rol) {
+        return rolService.updateRol(id, rol)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> createRol(rol));
-    }
-
-    private ResponseEntity<RolDto> createRol(RolDto rol) {
-        RolDto newRol = rolService.saveRol(rol);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newRol.id()).toUri();
-        return ResponseEntity.created(location).body(newRol);
+                .orElse(ResponseEntity.notFound().build());
     }
 }

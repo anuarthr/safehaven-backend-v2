@@ -1,32 +1,31 @@
 package com.data.safehaven.controllers;
 
 import com.data.safehaven.dtos.ConsultorioDto;
-import com.data.safehaven.services.ConsultorioService;
+import com.data.safehaven.services.ConsultorioServiceI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("api/consultorios")
-@CrossOrigin("http://localhost:5173/")
+@RequestMapping("/api/consultorios")
 public class ConsultorioController {
-    private final ConsultorioService consultorioService;
 
-    public ConsultorioController(ConsultorioService consultorioService) {
+    private final ConsultorioServiceI consultorioService;
+
+    public ConsultorioController(ConsultorioServiceI consultorioService) {
         this.consultorioService = consultorioService;
     }
 
     @GetMapping
-    ResponseEntity<List<ConsultorioDto>> obtenerConsultorios() {
+    public ResponseEntity<List<ConsultorioDto>> obtenerConsultorios() {
         return ResponseEntity.ok(consultorioService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ConsultorioDto> obtenerConsultorioById(@PathVariable("id") Long id) {
+    public ResponseEntity<ConsultorioDto> obtenerConsultorioById(@PathVariable Long id) {
         return consultorioService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,30 +33,25 @@ public class ConsultorioController {
 
     @PostMapping
     public ResponseEntity<ConsultorioDto> crearConsultorio(@RequestBody ConsultorioDto consultorio) {
-        return createConsultorio(consultorio);
+        ConsultorioDto nuevoConsultorio = consultorioService.saveConsultorio(consultorio);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevoConsultorio.id()).toUri();
+        return ResponseEntity.created(location).body(nuevoConsultorio);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ConsultorioDto> eliminarConsultorio(@PathVariable("id") Long id) {
+    public ResponseEntity<ConsultorioDto> eliminarConsultorio(@PathVariable Long id) {
         return consultorioService.findById(id)
-                .map(p -> {
+                .map(c -> {
                     consultorioService.deleteConsultorio(id);
-                    return ResponseEntity.ok().body(p);
+                    return ResponseEntity.ok().body(c);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ConsultorioDto> actualizarConsultorio(@PathVariable("id") Long id, @RequestBody ConsultorioDto consultorio) {
-        Optional<ConsultorioDto> consultorioUpdate = consultorioService.updateConsultorio(id, consultorio);
-        return consultorioUpdate
+    public ResponseEntity<ConsultorioDto> actualizarConsultorio(@PathVariable Long id, @RequestBody ConsultorioDto consultorio) {
+        return consultorioService.updateConsultorio(id, consultorio)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> createConsultorio(consultorio));
-    }
-
-    private ResponseEntity<ConsultorioDto> createConsultorio(ConsultorioDto consultorio) {
-        ConsultorioDto newConsultorio = consultorioService.saveConsultorio(consultorio);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newConsultorio.id()).toUri();
-        return ResponseEntity.created(location).body(newConsultorio);
+                .orElse(ResponseEntity.notFound().build());
     }
 }

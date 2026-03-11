@@ -1,7 +1,7 @@
 package com.data.safehaven.controllers;
 
 import com.data.safehaven.dtos.PacienteDto;
-import com.data.safehaven.entities.Paciente;
+import com.data.safehaven.dtos.RegistroPacienteDto;
 import com.data.safehaven.services.PacienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,12 +9,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pacientes")
-@CrossOrigin("http://localhost:5173/")
 public class PacienteController {
+
     private final PacienteService pacienteService;
 
     public PacienteController(PacienteService pacienteService) {
@@ -22,24 +21,27 @@ public class PacienteController {
     }
 
     @GetMapping
-    ResponseEntity<List<PacienteDto>> obtenerPacientes() {
+    public ResponseEntity<List<PacienteDto>> obtenerPacientes() {
         return ResponseEntity.ok(pacienteService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteDto> obtenerPacienteById(@PathVariable("id") Long id) {
+    public ResponseEntity<PacienteDto> obtenerPacienteById(@PathVariable Long id) {
         return pacienteService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PacienteDto> crearPaciente(@RequestBody PacienteDto paciente) {
-        return createPaciente(paciente);
+    public ResponseEntity<PacienteDto> crearPaciente(@RequestBody RegistroPacienteDto paciente) {
+        PacienteDto nuevoPaciente = pacienteService.savePaciente(paciente);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevoPaciente.id()).toUri();
+        return ResponseEntity.created(location).body(nuevoPaciente);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PacienteDto> eliminarPaciente(@PathVariable("id") Long id) {
+    public ResponseEntity<PacienteDto> eliminarPaciente(@PathVariable Long id) {
         return pacienteService.findById(id)
                 .map(p -> {
                     pacienteService.deletePaciente(id);
@@ -48,17 +50,9 @@ public class PacienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PacienteDto> actualizarPaciente(@PathVariable("id") Long id, @RequestBody PacienteDto paciente) {
-        Optional<PacienteDto> pacienteUpdate = pacienteService.updatePaciente(id, paciente);
-        return pacienteUpdate
+    public ResponseEntity<PacienteDto> actualizarPaciente(@PathVariable Long id, @RequestBody PacienteDto paciente) {
+        return pacienteService.updatePaciente(id, paciente)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> createPaciente(paciente));
-    }
-
-    private ResponseEntity<PacienteDto> createPaciente(PacienteDto paciente) {
-        PacienteDto newPaciente = pacienteService.savePaciente(paciente);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newPaciente.id()).toUri();
-        return ResponseEntity.created(location).body(newPaciente);
+                .orElse(ResponseEntity.notFound().build());
     }
 }
