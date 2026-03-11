@@ -1,6 +1,5 @@
 package com.data.safehaven.dtos;
 
-import com.data.safehaven.entities.Rol;
 
 import java.util.Date;
 
@@ -9,7 +8,6 @@ public record AdministradorDto(Long id,
                                String apellido,
                                Long rol,
                                String correoElectronico,
-                               String password,
                                Integer edad,
                                Long telefono,
                                String sexo,

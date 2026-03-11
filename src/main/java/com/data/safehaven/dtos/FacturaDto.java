@@ -1,8 +1,5 @@
 package com.data.safehaven.dtos;
 
-import com.data.safehaven.entities.Cita;
-import com.data.safehaven.entities.Paciente;
-
 import java.util.Date;
 
 public record FacturaDto(
@@ -13,7 +10,7 @@ public record FacturaDto(
         Date fechaDePago,
         Date insertAt,
         Date updateAt,
-        Cita cita,
-        Paciente paciente
+        Long cita,
+        Long paciente
 ) {}
 
