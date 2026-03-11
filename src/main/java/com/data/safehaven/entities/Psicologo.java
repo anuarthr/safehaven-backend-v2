@@ -16,7 +16,7 @@ public class Psicologo extends Usuario{
 
 
     private String especialidad;
-    private Integer añosDeExperiencia;
+    private Integer anosDeExperiencia;
     private String horarioDeAtencion;
 
     @OneToMany(mappedBy = "psicologo")

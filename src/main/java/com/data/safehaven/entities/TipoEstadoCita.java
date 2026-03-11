@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tipoEstadoCitas")
+@Table(name = "tipo_estado_citas")
 public class TipoEstadoCita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
