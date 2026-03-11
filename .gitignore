@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Credenciales y configuración local ###
+src/main/resources/application-local.properties
+
+### Sistema operativo ###
+.DS_Store
+Thumbs.db
