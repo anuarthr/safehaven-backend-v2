@@ -3,58 +3,62 @@ package com.data.safehaven.controllers;
 import com.data.safehaven.dtos.LoginRequestDto;
 import com.data.safehaven.dtos.LoginResponseDto;
 import com.data.safehaven.dtos.UsuarioDto;
-import com.data.safehaven.exceptions.ErrorMessage;
+import com.data.safehaven.security.JwtService;
 import com.data.safehaven.services.UsuarioServiceI;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
     private final UsuarioServiceI usuarioService;
 
-    public AuthController(UsuarioServiceI usuarioService) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtService jwtService,
+                          UsuarioServiceI usuarioService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
         this.usuarioService = usuarioService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
-        Optional<UsuarioDto> usuarioOpt = usuarioService.findByCorreoElectronico(loginRequest.email());
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorMessage(HttpStatus.NOT_FOUND.value(), "Usuario no encontrado", "USER_NOT_FOUND"));
-        }
-        UsuarioDto usuario = usuarioOpt.get();
-        if (!usuarioService.validatePassword(usuario, loginRequest.password())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), "Credenciales inválidas", "INVALID_CREDENTIALS"));
-        }
-        return ResponseEntity.ok(toLoginResponse(usuario));
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
+
+        String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+        UsuarioDto usuario = usuarioService.findByCorreoElectronico(loginRequest.email()).orElseThrow();
+        return ResponseEntity.ok(toLoginResponse(usuario, token));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> obtenerUsuarioLogueado(@RequestParam("email") String email) {
-        return usuarioService.findByCorreoElectronico(email)
-                .map(u -> ResponseEntity.ok(toLoginResponse(u)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<LoginResponseDto> obtenerUsuarioLogueado(Authentication authentication) {
+        return usuarioService.findByCorreoElectronico(authentication.getName())
+                .map(u -> ResponseEntity.ok(toLoginResponse(u, null)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    private LoginResponseDto toLoginResponse(UsuarioDto usuario) {
+    private LoginResponseDto toLoginResponse(UsuarioDto usuario, String token) {
+        UsuarioDto.RolDto rol = usuario.rol();
         return new LoginResponseDto(
                 usuario.id(),
                 usuario.nombre(),
                 usuario.apellido(),
-                usuario.rol(),
                 usuario.correoElectronico(),
+                rol == null ? null : new LoginResponseDto.RolDto(rol.id(), rol.nombre()),
                 usuario.edad(),
                 usuario.telefono(),
-                usuario.sexo()
+                usuario.sexo(),
+                usuario.fechaDeNacimiento(),
+                token
         );
     }
 }
-
-
