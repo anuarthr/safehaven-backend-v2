@@ -4,21 +4,21 @@
 
 CREATE TABLE roles (
     id          BIGSERIAL PRIMARY KEY,
-    nombre      VARCHAR(100) NOT NULL,
+    nombre      VARCHAR(100) NOT NULL UNIQUE,
     descripcion VARCHAR(255)
 );
 
 CREATE TABLE usuarios (
     id                   BIGSERIAL PRIMARY KEY,
-    nombre               VARCHAR(100),
-    apellido             VARCHAR(100),
-    correo_electronico   VARCHAR(150),
-    password             VARCHAR(255),
+    nombre               VARCHAR(100) NOT NULL,
+    apellido             VARCHAR(100) NOT NULL,
+    correo_electronico   VARCHAR(150) NOT NULL UNIQUE,
+    password             VARCHAR(255) NOT NULL,
     edad                 INTEGER,
-    telefono             BIGINT,
-    sexo                 VARCHAR(10),
+    telefono             VARCHAR(15),
+    sexo                 VARCHAR(20),
     fecha_de_nacimiento  DATE,
-    id_rol               BIGINT REFERENCES roles(id)
+    id_rol               BIGINT NOT NULL REFERENCES roles(id)
 );
 
 CREATE TABLE administradores (
@@ -34,37 +34,36 @@ CREATE TABLE psicologos (
 );
 
 CREATE TABLE pacientes (
-    id                  BIGINT PRIMARY KEY REFERENCES usuarios(id),
-    aseguradora         VARCHAR(150),
-    estado_de_salud     VARCHAR(100),
-    fecha_de_registro   DATE
+    id                BIGINT PRIMARY KEY REFERENCES usuarios(id),
+    aseguradora       VARCHAR(100),
+    estado_de_salud   VARCHAR(100),
+    fecha_de_registro DATE
 );
 
 CREATE TABLE consultorios (
     id                  BIGSERIAL PRIMARY KEY,
-    nombre              VARCHAR(100),
+    nombre              VARCHAR(100) NOT NULL,
     ubicacion           VARCHAR(200),
     tipo                VARCHAR(100),
     capacidad           INTEGER,
-    horario_de_apertura TIME,
-    horario_de_cierre   TIME,
+    horario_de_apertura VARCHAR(10),
+    horario_de_cierre   VARCHAR(10),
     activo              BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE citas (
     id              BIGSERIAL PRIMARY KEY,
-    motivo          VARCHAR(255),
+    motivo          VARCHAR(255) NOT NULL,
     duracion        TIME,
     tipo_cita       VARCHAR(100),
     insert_by       VARCHAR(150),
     update_by       VARCHAR(150),
-    fecha           DATE,
-    hora            TIME,
-    insert_at       DATE,
-    update_at       DATE,
-    paciente_id     BIGINT NOT NULL REFERENCES pacientes(id),
-    psicologo_id    BIGINT NOT NULL REFERENCES psicologos(id),
-    consultorio_id  BIGINT NOT NULL REFERENCES consultorios(id)
+    fecha           DATE NOT NULL,
+    hora            TIME NOT NULL,
+    id_paciente     BIGINT NOT NULL REFERENCES pacientes(id),
+    id_psicologo    BIGINT NOT NULL REFERENCES psicologos(id),
+    id_consultorio  BIGINT NOT NULL REFERENCES consultorios(id),
+    estado          VARCHAR(50) DEFAULT 'Programada'
 );
 
 CREATE TABLE servicios (
