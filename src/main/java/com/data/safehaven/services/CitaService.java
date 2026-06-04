@@ -5,21 +5,23 @@ import com.data.safehaven.dtos.CitaMapper;
 import com.data.safehaven.entities.Cita;
 import com.data.safehaven.repositories.CitaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CitaService implements CitaServiceI {
 
     private final CitaRepository citaRepository;
     private final CitaMapper citaMapper;
-    private final PacienteService pacienteService;
+    private final PacienteServiceI pacienteService;
     private final PsicologoServiceI psicologoService;
     private final ConsultorioServiceI consultorioService;
 
-    public CitaService(CitaRepository citaRepository, CitaMapper citaMapper, PacienteService pacienteService, PsicologoServiceI psicologoService, ConsultorioServiceI consultorioService) {
+    public CitaService(CitaRepository citaRepository, CitaMapper citaMapper, PacienteServiceI pacienteService, PsicologoServiceI psicologoService, ConsultorioServiceI consultorioService) {
         this.citaRepository = citaRepository;
         this.citaMapper = citaMapper;
         this.pacienteService = pacienteService;
@@ -45,6 +47,9 @@ public class CitaService implements CitaServiceI {
     @Override
     public CitaDto saveCita(CitaDto cita) {
         Cita citaEntity = citaMapper.toEntity(cita, pacienteService, consultorioService, psicologoService);
+        if (citaEntity.getEstado() == null || citaEntity.getEstado().isBlank()) {
+            citaEntity.setEstado("PENDIENTE");
+        }
         return citaMapper.toDTO(citaRepository.save(citaEntity));
     }
 
@@ -67,6 +72,9 @@ public class CitaService implements CitaServiceI {
             oldCita.setHora(cita.hora());
             oldCita.setDuracion(cita.duracion());
             oldCita.setTipoCita(cita.tipoCita());
+            if (cita.estado() != null && !cita.estado().isBlank()) {
+                oldCita.setEstado(cita.estado());
+            }
             return citaRepository.save(oldCita);
         }).map(citaMapper::toDTO);
     }

@@ -4,24 +4,35 @@ import com.data.safehaven.dtos.AdministradorDto;
 import com.data.safehaven.dtos.AdministradorMapper;
 import com.data.safehaven.dtos.RegistroAdministradorDto;
 import com.data.safehaven.entities.Administrador;
+import com.data.safehaven.exceptions.EmailException;
 import com.data.safehaven.repositories.AdministradorRepository;
+import com.data.safehaven.repositories.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class AdministradorService implements AdministradorServiceI {
 
     private final AdministradorRepository administradorRepository;
     private final AdministradorMapper administradorMapper;
     private final RolService rolService;
+    private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
 
-    public AdministradorService(AdministradorRepository administradorRepository, AdministradorMapper administradorMapper, RolService rolService) {
+    public AdministradorService(AdministradorRepository administradorRepository, AdministradorMapper administradorMapper,
+                                RolService rolService, PasswordEncoder passwordEncoder,
+                                UsuarioRepository usuarioRepository) {
         this.administradorRepository = administradorRepository;
         this.administradorMapper = administradorMapper;
         this.rolService = rolService;
+        this.passwordEncoder = passwordEncoder;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -41,7 +52,11 @@ public class AdministradorService implements AdministradorServiceI {
 
     @Override
     public AdministradorDto saveAdministrador(RegistroAdministradorDto administrador) {
+        if (usuarioRepository.existsByCorreoElectronico(administrador.correoElectronico())) {
+            throw new EmailException(administrador.correoElectronico());
+        }
         Administrador administradorEntity = administradorMapper.toEntity(administrador, rolService);
+        administradorEntity.setPassword(passwordEncoder.encode(administrador.password()));
         return administradorMapper.toDTO(administradorRepository.save(administradorEntity));
     }
 

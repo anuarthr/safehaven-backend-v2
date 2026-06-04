@@ -5,12 +5,14 @@ import com.data.safehaven.dtos.ConsultorioMapper;
 import com.data.safehaven.entities.Consultorio;
 import com.data.safehaven.repositories.ConsultorioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ConsultorioService implements ConsultorioServiceI {
 
     private final ConsultorioRepository consultorioRepository;
@@ -59,6 +61,7 @@ public class ConsultorioService implements ConsultorioServiceI {
         }
         return consultorioRepository.findById(id).map(oldConsultorio -> {
             oldConsultorio.setNombre(consultorio.nombre());
+            oldConsultorio.setUbicacion(consultorio.ubicacion());
             oldConsultorio.setCapacidad(consultorio.capacidad());
             oldConsultorio.setTipo(consultorio.tipo());
             oldConsultorio.setHorarioDeApertura(consultorio.horarioDeApertura());
