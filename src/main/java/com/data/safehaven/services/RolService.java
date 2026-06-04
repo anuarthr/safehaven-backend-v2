@@ -6,12 +6,14 @@ import com.data.safehaven.entities.Rol;
 import com.data.safehaven.repositories.RolRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RolService implements RolServiceI {
 
     private final RolRepository rolRepository;

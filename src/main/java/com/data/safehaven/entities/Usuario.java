@@ -2,12 +2,14 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,10 +25,9 @@ public class Usuario {
     private String correoElectronico;
     private String password;
     private Integer edad;
-    private Long telefono;
+    private String telefono;
     private String sexo;
-    @Temporal(TemporalType.DATE)
-    private Date fechaDeNacimiento;
+    private LocalDate fechaDeNacimiento;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idRol", nullable = true)
     private Rol rol;

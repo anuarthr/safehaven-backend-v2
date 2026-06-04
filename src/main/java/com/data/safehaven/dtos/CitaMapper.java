@@ -5,7 +5,7 @@ import com.data.safehaven.entities.Consultorio;
 import com.data.safehaven.entities.Paciente;
 import com.data.safehaven.entities.Psicologo;
 import com.data.safehaven.services.ConsultorioServiceI;
-import com.data.safehaven.services.PacienteService;
+import com.data.safehaven.services.PacienteServiceI;
 import com.data.safehaven.services.PsicologoServiceI;
 import org.mapstruct.*;
 
@@ -16,7 +16,7 @@ public interface CitaMapper {
     @Mapping(source = "paciente", target = "paciente", qualifiedByName = "idToPaciente")
     @Mapping(source = "psicologo", target = "psicologo", qualifiedByName = "idToPsicologo")
     @Mapping(source = "consultorio", target = "consultorio", qualifiedByName = "idToConsultorio")
-    Cita toEntity(CitaDto citaDto, @Context PacienteService pacienteService, @Context ConsultorioServiceI consultorioService, @Context PsicologoServiceI psicologoService);
+    Cita toEntity(CitaDto citaDto, @Context PacienteServiceI pacienteService, @Context ConsultorioServiceI consultorioService, @Context PsicologoServiceI psicologoService);
 
     @Mapping(source = "paciente.id", target = "paciente")
     @Mapping(source = "psicologo.id", target = "psicologo")
@@ -30,7 +30,7 @@ public interface CitaMapper {
     CitaDto toDTOWithoutId(Cita cita);
 
     @Named("idToPaciente")
-    default Paciente mapIdToPaciente(Long id, @Context PacienteService pacienteService) {
+    default Paciente mapIdToPaciente(Long id, @Context PacienteServiceI pacienteService) {
         return id != null ? pacienteService.findPacienteById(id).orElse(null) : null;
     }
 

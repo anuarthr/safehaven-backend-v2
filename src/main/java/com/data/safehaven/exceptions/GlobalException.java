@@ -1,13 +1,46 @@
 package com.data.safehaven.exceptions;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @ControllerAdvice
 public class GlobalException {
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorMessage> handleAuthentication(AuthenticationException ex) {
+        ErrorMessage apiError = new ErrorMessage(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Credenciales inválidas",
+                "INVALID_CREDENTIALS"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorMessage> handleAccessDenied(AccessDeniedException ex) {
+        ErrorMessage apiError = new ErrorMessage(
+                HttpStatus.FORBIDDEN.value(),
+                "No tiene permisos para realizar esta acción",
+                "ACCESS_DENIED"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorMessage> handleDataIntegrity(DataIntegrityViolationException ex) {
+        ErrorMessage apiError = new ErrorMessage(
+                HttpStatus.CONFLICT.value(),
+                "La operación viola una restricción de datos (posible registro duplicado)",
+                "DATA_INTEGRITY_VIOLATION"
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
 
     @ExceptionHandler(EmailException.class)
     public ResponseEntity<ErrorMessage> handleEmailException(EmailException ex) {

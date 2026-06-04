@@ -4,10 +4,12 @@ import com.data.safehaven.dtos.UsuarioDto;
 import com.data.safehaven.dtos.UsuarioMapper;
 import com.data.safehaven.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UsuarioService implements UsuarioServiceI {
 
     private final UsuarioRepository usuarioRepository;
@@ -21,10 +23,5 @@ public class UsuarioService implements UsuarioServiceI {
     @Override
     public Optional<UsuarioDto> findByCorreoElectronico(String email) {
         return usuarioRepository.findByCorreoElectronico(email).map(usuarioMapper::toDTO);
-    }
-
-    @Override
-    public boolean validatePassword(UsuarioDto usuario, String password) {
-        return usuario.password().equals(password);
     }
 }

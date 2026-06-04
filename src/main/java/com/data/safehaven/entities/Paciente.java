@@ -2,13 +2,15 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +20,7 @@ public class Paciente extends Usuario{
     private String aseguradora;
     private String estadoDeSalud;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaDeRegistro;
+    private LocalDate fechaDeRegistro;
 
     @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
     private List<HistorialClinico> historialClinico;

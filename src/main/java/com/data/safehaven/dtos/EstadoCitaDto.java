@@ -1,10 +1,10 @@
 package com.data.safehaven.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record EstadoCitaDto(Long idEstadoCita,
-                            Date fechaInicioEstado,
-                            Date fechaFinEstado,
-                            Date fechaInicioDeRegistroEstado,
-                            Date fechaFinDeRegistroEstado) {
+                            LocalDate fechaInicioEstado,
+                            LocalDate fechaFinEstado,
+                            LocalDate fechaInicioDeRegistroEstado,
+                            LocalDate fechaFinDeRegistroEstado) {
 }

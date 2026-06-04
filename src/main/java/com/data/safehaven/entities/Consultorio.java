@@ -2,12 +2,13 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
-import java.time.LocalTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,8 +22,8 @@ public class Consultorio {
     private String ubicacion;
     private String tipo;
     private Integer capacidad;
-    private LocalTime horarioDeApertura;
-    private LocalTime horarioDeCierre;
+    private String horarioDeApertura;
+    private String horarioDeCierre;
     private boolean activo;
 
     @OneToMany(mappedBy = "consultorio", fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.data.safehaven.controllers;
 
+import jakarta.validation.Valid;
 import com.data.safehaven.dtos.ConsultorioDto;
 import com.data.safehaven.services.ConsultorioServiceI;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ConsultorioController {
     }
 
     @PostMapping
-    public ResponseEntity<ConsultorioDto> crearConsultorio(@RequestBody ConsultorioDto consultorio) {
+    public ResponseEntity<ConsultorioDto> crearConsultorio(@Valid @RequestBody ConsultorioDto consultorio) {
         ConsultorioDto nuevoConsultorio = consultorioService.saveConsultorio(consultorio);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(nuevoConsultorio.id()).toUri();
@@ -49,7 +50,7 @@ public class ConsultorioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ConsultorioDto> actualizarConsultorio(@PathVariable Long id, @RequestBody ConsultorioDto consultorio) {
+    public ResponseEntity<ConsultorioDto> actualizarConsultorio(@PathVariable Long id, @Valid @RequestBody ConsultorioDto consultorio) {
         return consultorioService.updateConsultorio(id, consultorio)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

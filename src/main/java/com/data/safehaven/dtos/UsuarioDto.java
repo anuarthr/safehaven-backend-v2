@@ -1,15 +1,16 @@
 package com.data.safehaven.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record UsuarioDto(Long id,
                          String nombre,
                          String apellido,
-                         Long rol,
+                         RolDto rol,
                          String correoElectronico,
-                         String password,
                          Integer edad,
-                         Long telefono,
+                         String telefono,
                          String sexo,
-                         Date fechaDeNacimiento) {
+                         LocalDate fechaDeNacimiento) {
+
+    public record RolDto(Long id, String nombre) {}
 }
