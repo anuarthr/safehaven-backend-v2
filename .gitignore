@@ -42,3 +42,9 @@ src/main/resources/application-local.properties
 ### Sistema operativo ###
 .DS_Store
 Thumbs.db
+
+### Logs ###
+*.log
+
+### Claude Code ###
+CLAUDE.md
