@@ -1,15 +1,15 @@
 package com.data.safehaven.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record FacturaDto(
         Long id,
         double monto,
         String insertBy,
         String updateBy,
-        Date fechaDePago,
-        Date insertAt,
-        Date updateAt,
+        LocalDate fechaDePago,
+        LocalDate insertAt,
+        LocalDate updateAt,
         Long cita,
         Long paciente
 ) {}

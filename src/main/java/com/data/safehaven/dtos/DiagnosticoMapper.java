@@ -3,7 +3,7 @@ package com.data.safehaven.dtos;
 import com.data.safehaven.entities.Diagnostico;
 import com.data.safehaven.entities.Paciente;
 import com.data.safehaven.entities.Psicologo;
-import com.data.safehaven.services.PacienteService;
+import com.data.safehaven.services.PacienteServiceI;
 import com.data.safehaven.services.PsicologoServiceI;
 import org.mapstruct.*;
 
@@ -13,7 +13,7 @@ public interface DiagnosticoMapper {
     @Mapping(source = "paciente", target = "paciente", qualifiedByName = "idToPaciente")
     @Mapping(source = "psicologo", target = "psicologo", qualifiedByName = "idToPsicologo")
     Diagnostico toEntity(DiagnosticoDto diagnosticoDto,
-                         @Context PacienteService pacienteService,
+                         @Context PacienteServiceI pacienteService,
                          @Context PsicologoServiceI psicologoService);
 
     @Mapping(source = "paciente.id", target = "paciente")
@@ -26,7 +26,7 @@ public interface DiagnosticoMapper {
     DiagnosticoDto toDTOWithoutId(Diagnostico diagnostico);
 
     @Named("idToPaciente")
-    default Paciente mapIdToPaciente(Long id, @Context PacienteService pacienteService) {
+    default Paciente mapIdToPaciente(Long id, @Context PacienteServiceI pacienteService) {
         return id != null ? pacienteService.findPacienteById(id).orElse(null) : null;
     }
 

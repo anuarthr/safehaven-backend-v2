@@ -1,7 +1,7 @@
 package com.data.safehaven.dtos;
 
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record AdministradorDto(Long id,
                                String nombre,
@@ -9,8 +9,8 @@ public record AdministradorDto(Long id,
                                Long rol,
                                String correoElectronico,
                                Integer edad,
-                               Long telefono,
+                               String telefono,
                                String sexo,
-                               Date fechaDeNacimiento,
+                               LocalDate fechaDeNacimiento,
                                String cargo) {
 }
