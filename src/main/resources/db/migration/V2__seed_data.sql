@@ -16,6 +16,9 @@ SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));
 -- Credenciales de demo: admin@safehaven.com / admin123  (hash BCrypt generado con BCryptPasswordEncoder)
 INSERT INTO usuarios (nombre, apellido, correo_electronico, password, edad, telefono, sexo, fecha_de_nacimiento, id_rol)
 VALUES ('Admin', 'SafeHaven', 'admin@safehaven.com', '$2a$10$990oHJNLzbiWtTl8dueEOO5mnYItOau81jW2j8bBdN/tT2zvfi6NG', 30, '3001234567', 'Masculino', '1995-01-01', 2);
+-- Contraseña: admin123 (en texto plano — cambiar en producción)
+INSERT INTO usuarios (nombre, apellido, correo_electronico, password, edad, telefono, sexo, fecha_de_nacimiento, id_rol)
+VALUES ('Admin', 'SafeHaven', 'admin@safehaven.com', 'admin123', 30, 3001234567, 'M', '1995-01-01', 2);
 
 -- Registro en tabla administradores usando el id del usuario recién insertado
 INSERT INTO administradores (id, cargo)
