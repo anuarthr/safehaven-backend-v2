@@ -1,8 +1,8 @@
 package com.data.safehaven.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record HistorialClinicoDto(Long id,
-                                  Date fechaDeCreacion,
+                                  LocalDate fechaDeCreacion,
                                   String comentarios) {
 }

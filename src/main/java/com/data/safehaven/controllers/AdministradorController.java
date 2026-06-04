@@ -1,5 +1,6 @@
 package com.data.safehaven.controllers;
 
+import jakarta.validation.Valid;
 import com.data.safehaven.dtos.AdministradorDto;
 import com.data.safehaven.dtos.RegistroAdministradorDto;
 import com.data.safehaven.services.AdministradorServiceI;
@@ -33,7 +34,7 @@ public class AdministradorController {
     }
 
     @PostMapping
-    public ResponseEntity<AdministradorDto> crearAdministrador(@RequestBody RegistroAdministradorDto administrador) {
+    public ResponseEntity<AdministradorDto> crearAdministrador(@Valid @RequestBody RegistroAdministradorDto administrador) {
         AdministradorDto nuevoAdministrador = administradorService.saveAdministrador(administrador);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(nuevoAdministrador.id()).toUri();
@@ -50,7 +51,7 @@ public class AdministradorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdministradorDto> actualizarAdministrador(@PathVariable Long id, @RequestBody AdministradorDto administrador) {
+    public ResponseEntity<AdministradorDto> actualizarAdministrador(@PathVariable Long id, @Valid @RequestBody AdministradorDto administrador) {
         return administradorService.updateAdministrador(id, administrador)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

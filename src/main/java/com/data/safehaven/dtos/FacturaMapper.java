@@ -4,7 +4,7 @@ import com.data.safehaven.entities.Cita;
 import com.data.safehaven.entities.Factura;
 import com.data.safehaven.entities.Paciente;
 import com.data.safehaven.services.CitaServiceI;
-import com.data.safehaven.services.PacienteService;
+import com.data.safehaven.services.PacienteServiceI;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
@@ -14,7 +14,7 @@ public interface FacturaMapper {
     @Mapping(source = "paciente", target = "paciente", qualifiedByName = "idToPaciente")
     Factura toEntity(FacturaDto facturaDto,
                      @Context CitaServiceI citaService,
-                     @Context PacienteService pacienteService);
+                     @Context PacienteServiceI pacienteService);
 
     @Mapping(source = "cita.id", target = "cita")
     @Mapping(source = "paciente.id", target = "paciente")
@@ -31,7 +31,7 @@ public interface FacturaMapper {
     }
 
     @Named("idToPaciente")
-    default Paciente mapIdToPaciente(Long id, @Context PacienteService pacienteService) {
+    default Paciente mapIdToPaciente(Long id, @Context PacienteServiceI pacienteService) {
         return id != null ? pacienteService.findPacienteById(id).orElse(null) : null;
     }
 }

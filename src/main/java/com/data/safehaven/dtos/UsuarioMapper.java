@@ -11,22 +11,32 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
-    @Mapping(source = "rol", target = "rol", qualifiedByName = "idToRol")
-    Usuario toEntity(UsuarioDto usuarioDto, @Context RolService rolService);
-
-    @Mapping(source = "rol.id", target = "rol")
+    @Mapping(source = "rol", target = "rol", qualifiedByName = "rolToRolDto")
+    @Mapping(source = "fechaDeNacimiento", target = "fechaDeNacimiento")
     UsuarioDto toDTO(Usuario usuario);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "rol.id", target = "rol")
+    @Mapping(source = "rol", target = "rol", qualifiedByName = "rolToRolDto")
+    @Mapping(source = "fechaDeNacimiento", target = "fechaDeNacimiento")
     UsuarioDto toDTOWithoutId(Usuario usuario);
 
-    @Named("idToRol")
-    default Rol mapIdToRol(Long id, @Context RolService rolService) {
-        if (id == null) {
-            return rolService.findRoleById(id);
+    @Mapping(source = "rol", target = "rol", qualifiedByName = "idToRol")
+    Usuario toEntity(UsuarioDto usuarioDto, @Context RolService rolService);
+
+    @Named("rolToRolDto")
+    default UsuarioDto.RolDto mapRolToRolDto(Rol rol) {
+        if (rol == null) {
+            return null;
         }
-        return rolService.findRoleById(id);
+        return new UsuarioDto.RolDto(rol.getId(), rol.getNombre());
+    }
+
+    @Named("idToRol")
+    default Rol mapIdToRol(UsuarioDto.RolDto rolDto, @Context RolService rolService) {
+        if (rolDto == null || rolDto.id() == null) {
+            return null;
+        }
+        return rolService.findRoleById(rolDto.id());
     }
 
 }

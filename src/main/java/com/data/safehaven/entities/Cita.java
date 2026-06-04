@@ -2,14 +2,16 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,25 +30,20 @@ public class Cita {
     private String insertBy;
     private String updateBy;
 
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private LocalDate fecha;
 
     private LocalTime hora;
 
-    @Temporal(TemporalType.DATE)
-    private Date insertAt;
-
-    @Temporal(TemporalType.DATE)
-    private Date updateAt;
+    private String estado = "PENDIENTE";
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "pacienteId")
+    @JoinColumn(nullable = false, name = "id_paciente")
     private Paciente paciente;
     @ManyToOne
-    @JoinColumn(nullable = false, name = "psicologoId")
+    @JoinColumn(nullable = false, name = "id_psicologo")
     private Psicologo psicologo;
     @ManyToOne
-    @JoinColumn(nullable = false, name = "consultorioId")
+    @JoinColumn(nullable = false, name = "id_consultorio")
     private Consultorio consultorio;
 
     @OneToMany(mappedBy = "cita", fetch = FetchType.LAZY)

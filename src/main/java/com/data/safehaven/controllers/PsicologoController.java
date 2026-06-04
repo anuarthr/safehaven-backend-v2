@@ -1,5 +1,6 @@
 package com.data.safehaven.controllers;
 
+import jakarta.validation.Valid;
 import com.data.safehaven.dtos.PsicologoDto;
 import com.data.safehaven.dtos.RegistroPsicologoDto;
 import com.data.safehaven.services.PsicologoServiceI;
@@ -33,7 +34,7 @@ public class PsicologoController {
     }
 
     @PostMapping
-    public ResponseEntity<PsicologoDto> crearPsicologo(@RequestBody RegistroPsicologoDto psicologo) {
+    public ResponseEntity<PsicologoDto> crearPsicologo(@Valid @RequestBody RegistroPsicologoDto psicologo) {
         PsicologoDto nuevoPsicologo = psicologoService.savePsicologo(psicologo);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(nuevoPsicologo.id()).toUri();
@@ -50,7 +51,7 @@ public class PsicologoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PsicologoDto> actualizarPsicologo(@PathVariable Long id, @RequestBody PsicologoDto psicologo) {
+    public ResponseEntity<PsicologoDto> actualizarPsicologo(@PathVariable Long id, @Valid @RequestBody PsicologoDto psicologo) {
         return psicologoService.updatePsicologo(id, psicologo)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -1,5 +1,6 @@
 package com.data.safehaven.controllers;
 
+import jakarta.validation.Valid;
 import com.data.safehaven.dtos.CitaDto;
 import com.data.safehaven.services.CitaServiceI;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class CitaController {
     }
 
     @PostMapping
-    public ResponseEntity<CitaDto> crearCita(@RequestBody CitaDto cita) {
+    public ResponseEntity<CitaDto> crearCita(@Valid @RequestBody CitaDto cita) {
         CitaDto nuevaCita = citaService.saveCita(cita);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(nuevaCita.id()).toUri();
@@ -49,7 +50,7 @@ public class CitaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CitaDto> actualizarCita(@PathVariable Long id, @RequestBody CitaDto cita) {
+    public ResponseEntity<CitaDto> actualizarCita(@PathVariable Long id, @Valid @RequestBody CitaDto cita) {
         return citaService.updateCita(id, cita)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
