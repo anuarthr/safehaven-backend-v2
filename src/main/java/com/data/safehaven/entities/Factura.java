@@ -2,13 +2,15 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,14 +23,11 @@ public class Factura {
     private double monto;
     private String insertBy;
     private String updateBy;
-    @Temporal(TemporalType.DATE)
-    private Date fechaDePago;
+    private LocalDate fechaDePago;
 
-    @Temporal(TemporalType.DATE)
-    private Date insertAt;
+    private LocalDate insertAt;
 
-    @Temporal(TemporalType.DATE)
-    private Date updateAt;
+    private LocalDate updateAt;
 
     @ManyToOne
     @JoinColumn(name = "idCita")

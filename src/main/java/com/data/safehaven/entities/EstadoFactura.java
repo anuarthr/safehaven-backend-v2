@@ -2,12 +2,14 @@ package com.data.safehaven.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,17 +30,13 @@ public class EstadoFactura {
     @JoinColumn(name = "TIPODEESTADOFACTURA_ID")
     private TipoEstadoFactura tipoEstadoFactura;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaInicioEstado;
+    private LocalDate fechaInicioEstado;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaFinEstado;
+    private LocalDate fechaFinEstado;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaInicioDeRegistroEstado;
+    private LocalDate fechaInicioDeRegistroEstado;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaFinDeRegistroEstado;
+    private LocalDate fechaFinDeRegistroEstado;
 
 
 }
