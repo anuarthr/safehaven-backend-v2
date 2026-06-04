@@ -1,8 +1,9 @@
 package com.data.safehaven.controllers;
 
+import jakarta.validation.Valid;
 import com.data.safehaven.dtos.PacienteDto;
 import com.data.safehaven.dtos.RegistroPacienteDto;
-import com.data.safehaven.services.PacienteService;
+import com.data.safehaven.services.PacienteServiceI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,9 +15,9 @@ import java.util.List;
 @RequestMapping("/api/pacientes")
 public class PacienteController {
 
-    private final PacienteService pacienteService;
+    private final PacienteServiceI pacienteService;
 
-    public PacienteController(PacienteService pacienteService) {
+    public PacienteController(PacienteServiceI pacienteService) {
         this.pacienteService = pacienteService;
     }
 
@@ -33,7 +34,7 @@ public class PacienteController {
     }
 
     @PostMapping
-    public ResponseEntity<PacienteDto> crearPaciente(@RequestBody RegistroPacienteDto paciente) {
+    public ResponseEntity<PacienteDto> crearPaciente(@Valid @RequestBody RegistroPacienteDto paciente) {
         PacienteDto nuevoPaciente = pacienteService.savePaciente(paciente);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(nuevoPaciente.id()).toUri();
@@ -50,7 +51,7 @@ public class PacienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PacienteDto> actualizarPaciente(@PathVariable Long id, @RequestBody PacienteDto paciente) {
+    public ResponseEntity<PacienteDto> actualizarPaciente(@PathVariable Long id, @Valid @RequestBody PacienteDto paciente) {
         return pacienteService.updatePaciente(id, paciente)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
